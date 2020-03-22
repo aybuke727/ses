@@ -1,135 +1,212 @@
+/*Zıp zıp kurbağa bir nehri karşıdan karşıya geçmek istemektedir. Nehrin iki kenarı arasında 72 adet taş vardır. Kurbağa
+
+sadece ileri doğru ve tek bir seferde rastgele olarak 1, 2 veya 3 sonraki taşa zıplamaktadır. 72 adet taş verildiğinde nehrin
+
+bir kenarından diğer kenarına kaç farklı şekilde ulaşabileceği bulan bir program*/
+
+
+
 #include <iostream>
-#include <cmath>
-#include <string.h>
-#define i sqrt(-1) //i gördugu yere karakök -1 yazacak
+
+#include <vector>
+
+#include <iomanip>
+
+#include <chrono>
+
+
+
 using namespace std;
-void yazdir(int k,int l);//fonksiyonu global olarak tanımladım
-class KarmasikSayi {
-private:
-	double reel;
-	double sanal;
-public:
 
-	KarmasikSayi() {
-		this->reel=0;//1.istenileni yaptım 0 atadım reel ve sanal a
-		this->sanal =0;
-	} //1.default constructor oluşturduk.
 
-	KarmasikSayi(int a) {//2. istenilen reel kısmı kullanıcıdan aldık bit tamsayı yazdırıyor çünkü sanaal kısım 0
-    reel=a;
-	sanal=0;
-	cout<<"Olusuturulan karmasik sayi:" <<reel<<"+"<<sanal<<"i"<<endl;
-	//2.integer sayiyi karmaşik sayiya çevirme
-		}
 
-	KarmasikSayi(double b) {//3. istenilen reel kısmı kullanıcıdan aldık double sayi yazdırıyor çünkü sanal kısım 0
-		sanal=0;
-		reel=b;
-		cout<<"oluþturulan karmasik sayi:"<<reel<<"+"<<sanal<<"i"<<endl;
-		//3.double sayiyi karmaþik sayiya çevirme
-	}
+//aşağıdaki satırları yoruma alarak kodunuzu farklı şekillerde test edebilirsiniz.
 
-	KarmasikSayi(int c, int d) {//4.istenilen kullanıcı reel ve sanal kısmı giriyor ve karmasık sayı üretiliyor
-		reel=c;
-		sanal=d;
-		cout<<c<<"+"<<d<<"i"<<endl;
-	}
-	void setter(int c, int d){//private de olduğu için setter fonksiyonu kullandık
-		reel = c;
-		sanal = d;
-  }
-	int getReel() const {//get fonksiyonu ile reel degerimizi döndürüyoruz
-		return reel;
-	}
-	int getSanal() const {//get fonksiyonu ile sanal degerimizi döndürüyoruz
-		return sanal;
-	}
+#define _TEST_ITERATIVE_
 
-	int Karmasikyap(int e,int f)//karmasık sayı yapan fonksiyon
-	{cout<<"karmasık sayı yapmak için reel ve sanal degerelri isaretleriyle girniz"<<endl;
-		cin>>e;
-		cin>>f;
-		cout<<"Karmasik yapmak istediginiz sayilari giriniz(isaretleriyle)"<<endl;
-		cout<<""<<e<<""<<f<<"i"<<endl;
-	}
+#define _TEST_RECURSIVE_
 
-	void karmasikTopla(int reeltoplam,int sanaltoplam){
-        int h,t,p,g;//toplama yapacağımız karmasık sayıların sanal ve reel kısımları
-		cout<<"Toplama yapmak istediginiz karmasik sayinin reel ve sanal kisimlarini giriniz"<<endl;
-		cin>>h;
-		cin>>g;
-		cout<<"Toplama yapmak istediginiz karmasik sayinin reel ve sanal kisimlarini giriniz"<<endl;
-		cin>>t;
-		cin>>p;
-		reeltoplam=h+t;//reel kısımlar kendi içinde toplanıyor
-		sanaltoplam=g+p;//sanal kısımlar kendi içinde toplanıyor
-		cout<<"Toplanmis hali: "<<endl;
-		cout<<reeltoplam<<""<<sanaltoplam<<"i"<<endl;//sonuc ekrana basılır
-	}
-		void karmasikcikartma(int reelcikar,int sanalcikar){
-     	int r,t,y,e;//cıkarma yapacağımız karmasık sayıların sanal ve reel kısımları
-		cout<<"Cýkarma yapmak istediginiz karmasik sayinin reel ve sanal kisimlarini giriniz(isaretleriyle)"<<endl;
-		cin>>r;
-		cin>>t;
-		cout<<"Cýkarma yapmak istediginiz karmasik sayinin reel ve sanal kisimlarini giriniz(isaretleriyle)"<<endl;
-		cin>>y;
-		cin>>e;
-		reelcikar=r-y;//reelden reel çıkıyor
-		sanalcikar=t-e;//sanaldan sanal çıkıyor
 
-        if(sanalcikar>0){
-		cout<<""<<reelcikar<<"+"<<sanalcikar<<"i"<<endl;
-		}
-		else{
-           cout<<""<<reelcikar<<""<<sanalcikar<<"i"<<endl;//sonuc ekrana bastırılıyor
-		}
-		}
 
-		void karmasikbolme(){
-     	double gercek,sanal,gercel,karmasik;
-     	double t1,t2,k1,k2;//bölme yapacağımız karmasık sayıların reel ve sanaal kısımları giriliyor
-		cout<<"karmasik sayinin reel ve sanal kisimlarini giriniz"<<endl;
-		cin>>gercel;
-		cin>>sanal;
-		cout<<"karmasik sayinin reel ve sanal kisimlarini giriniz"<<endl;
-		cin>>gercek;
-		cin>>karmasik;
-		t1=(gercel*gercek)+(sanal*karmasik);//eslenik ile çarpma yapılıyor
-		t2=(gercek*gercek)+(karmasik*karmasik);
-		double tam=t1/t2;
-		k1=(sanal*gercek)-(gercel*karmasik);
-		k2=(gercek*gercek)+(karmasik*karmasik);
-		double kompleks=k1/k2;
-		if(kompleks<0){
-            cout<<"Karmasik sayilarin bolümü: "<<tam<<kompleks<<"i"<<endl;//sanal kısım negatif çıktığında - işareti zaten konulacağı için tekrar işaret koymuyoruz
-		}
-		else {
+// Bu odevde global veya statik degisken tanimlanamaz!!!
 
-            cout<<"Karmasik sayilarin bolümü: "<<tam<<"+"<<kompleks<<"i"<<endl;//sanal kısım pozitifse işareti ortaya koyuyoruz
 
-		}
 
-    }
-};
-int main()
+/* Ozyinelemeli olarak zip zip kurbaganin kac farkli yoldan gittigini bulan fonksiyondur.
+
+ * Bu fonksiyon icinde for ve while kullanamazsiniz ve en az bir kez recursiveFunction
+
+ * fonksiyonu cagri yapilmalidir.
+
+ */
+
+
+
+long long recursiveFunction(int numberOfStones)//long da tutmamız gerektiği için longla tanımladık fonksiyonu
+
 {
-	KarmasikSayi k1,k2,k3,k4;//objelerimizi tanımladık
-    yazdir(k1.getReel(),k1.getSanal());//global fonksiyonuzmuzla degerleri çağırıdk
-    k2.Karmasikyap(k2.getReel(),k2.getSanal());//class ın içindeki fonk ile karmasık sayı yapıyoruz
-    k2.karmasikTopla(k2.getReel(),k2.getSanal());//karmasık sayıları toplama fonksiyonunu çağırdık
-    k2.karmasikcikartma(k2.getReel(),k2.getSanal());//karmasık sayıları çıkarma fonk çağırdık
-    k3.karmasikbolme();//karmasık sayıları bölme fonk çağırdık
-    KarmasikSayi(2,6);//karmasık sayı yapan constructor çağırıdık
-    KarmasikSayi(5);//int gönderdiğimiz 2. istenen constructor a deger gönderdik
-    KarmasikSayi(2.7);//double gönderdiğimiz 3. istenen constructor a deger gönderdik
 
-	return 0;
+	switch (numberOfStones)//durumlar için switch case kullanıyoruz
+
+	{
+
+	case 1:          // base case 1
+
+		return 1;
+
+		break;
+
+
+
+	case 2:          //base case 2
+
+		return 2;
+
+		break;
+
+
+
+	case 3:          //base case 3
+
+		return 4;
+
+		break;
+
+
+
+	default://burası bütün ihtimalleri en son 3,2,1 li taşlara çeviren kısım onu dönderiyor eğer taş sayısı 4 ve 4den büyükse
+
+		return recursiveFunction(numberOfStones - 1) + recursiveFunction(numberOfStones - 2) + recursiveFunction(numberOfStones - 3); //bu kısım memoization kısmıdır sayılar her defasında 1-2-3 adımdarındaki yollara bölünür.
+
+	}
+
 }
-void yazdir(int k,int l){//global yazdığımız karmasık sayıyı reel ve sanal şeklinde gösteren fonksiyonumuz
-	cout<<"Olusturmak istediginiz karmasik sayiyi giriniz(isaretleriyle)"<<endl;
-	cin>>k;
-	cin>>l;
-	cout<<""<<k<<""<<l<<"i"<<endl;
-	cout<<"reel kisim: "<<k<<endl;
-	cout<<"sanal kisim:"<<l<<endl;
+
+
+
+/* Yinelemeli olarak zip zip kurbaganin kac farkli yoldan gittigini bulan fonksiyondur.
+
+ * Bu fonksiyon icinde for ve while dongusu kullanilmalidir.
+
+ * Bu fonksiyon icinde baska bir fonksiyona (kendisi dahil) cagri yapilamaz.
+
+ */
+
+
+
+long long iterativeFunction(int numberOfStones,int i)//buda recursive fonksiyonun iterative hali
+
+{
+
+	long long yolsayisi;
+
+	vector <long long> zipzip;  //yol sayısını tutan vector
+
+	zipzip.push_back(1);        //vektörün ilk elemanı 1 (base case-1)
+
+	zipzip.push_back(2);        //vektörün ikinci  elemanı 2 (base case-2)
+
+	zipzip.push_back(4);        //vektörün üçüncü elemanı 4 (base case-3)
+
+	long long toplam = 7;      // her adım kendinden önceki 3 adımın toplam yol sayısı kadardır 4.adımda 1.2. ve 3.adımların toplamı olan (1+2+4=7) 7 vardır ve bu toplam vektöre arkadan eklenir.
+
+	for (int i =1; i < numberOfStones; ++i)  //döngü ile 4. elemandan itibaren önceki 3 eleman toplanır ve toplamlar vektöre arkadan eklenir.
+
+	{
+
+		zipzip.push_back(toplam);//alttaki toplam vectorun son elemanı olarak eklenir
+
+		yolsayisi = zipzip[i-1] ;//alttaki işlemde çıkarılacak yol sayısı
+
+		toplam = toplam * 2 - yolsayisi;  //matematiksel olarak toplam  base caselerden sonraki ilk  yol sayının (7) 2 katı ve dizinin ilk elemanından başlayarak sırayla yol sayısını çıkararak bulunur.
+
+	}
+
+	return zipzip[i-1];  //main kısmındaki döngü buradaki vektör elmanlarını sırasıyla dizi gibi basar.
+
 }
+
+
+
+
+
+
+
+int main()
+
+{
+
+	const int MAX_NUMBER_OF_STONES{ 72 };
+
+
+
+	cout << setfill(' ');
+
+
+
+	cout.imbue(locale(""));
+
+
+
+	for (auto i = 1; i < MAX_NUMBER_OF_STONES; ++i)
+
+	{
+
+
+
+#ifdef _TEST_ITERATIVE_
+
+		{
+
+			long long tempResult = { 0 };
+
+
+
+			auto start = std::chrono::steady_clock::now();
+
+			tempResult = iterativeFunction(i,i);
+
+			auto stop = std::chrono::steady_clock::now();
+
+			auto duration = std::chrono::duration_cast<std::chrono::microseconds>(stop - start).count();
+
+
+
+
+
+			cout << "iterative" << setw(4) << i << " -> " << tempResult << " ( " << duration << "us )\n";
+
+		}
+
+#endif
+
+
+
+#ifdef _TEST_RECURSIVE_
+
+		{
+
+			long long tempResult = { 0 };
+
+
+
+			auto start = std::chrono::steady_clock::now();
+
+			tempResult = recursiveFunction(i);
+
+			auto stop = std::chrono::steady_clock::now();
+
+			auto duration = std::chrono::duration_cast<std::chrono::microseconds>(stop - start).count();
+
+
+
+			cout << "recursive" << setw(4) << i << " -> " << tempResult << " ( " << duration << "us )\n\n";
+
+		}
+
+#endif
+
+
+
+	}
+
